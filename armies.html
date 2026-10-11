@@ -1,182 +1,250 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CP 24/7 | Armies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP 24/7 — Army Directory</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #071629;
-      color: #eef7ff;
+      background: #101827;
+      color: #f3f6fc;
     }
 
     header {
-      background: #102b4c;
-      padding: 22px 15px;
       text-align: center;
-      border-bottom: 2px solid #48baff;
+      padding: 30px 16px;
+      background: #172b49;
+      border-bottom: 2px solid #4aa8ff;
     }
 
-    header h1 { margin-top: 0; }
-
-    nav a {
-      display: inline-block;
-      margin: 6px;
-      color: #b9e5ff;
-      text-decoration: none;
-    }
-
-    nav a:hover { color: white; }
+    header h1 { margin: 0 0 8px; }
+    header p { color: #c3d5ed; margin: 0; }
 
     main {
       max-width: 1000px;
       margin: auto;
-      padding: 25px 16px;
+      padding: 20px 14px;
     }
 
-    .intro, .army {
-      background: #102541;
-      border: 1px solid #244d75;
-      border-radius: 12px;
-      padding: 18px;
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .intro { margin-bottom: 20px; }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border: 1px solid #48baff;
+    input, button {
+      padding: 12px;
       border-radius: 8px;
-      background: #071629;
-      color: white;
       font-size: 16px;
     }
 
-    #armies {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 15px;
+    input {
+      flex: 1;
+      min-width: 180px;
+      background: #1b2739;
+      border: 1px solid #40536e;
+      color: white;
     }
 
-    .army h3 {
-      margin-top: 0;
-      color: #75d0ff;
+    button {
+      background: #2686e8;
+      border: none;
+      color: white;
+      cursor: pointer;
     }
+
+    button:disabled { opacity: .6; }
+
+    #status { color: #c3d5ed; line-height: 1.5; }
+
+    #army-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .army {
+      background: #1b2739;
+      border: 1px solid #344660;
+      border-top: 5px solid var(--army-color, #4aa8ff);
+      border-radius: 10px;
+      padding: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .army h2 { margin: 0 0 12px; font-size: 21px; }
 
     .points {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
+      margin: 8px 0;
     }
 
-    .note {
-      color: #b9cce0;
-      font-size: 14px;
+    .detail {
+      color: #c3d5ed;
+      line-height: 1.6;
+      white-space: pre-wrap;
     }
+
+    .army a { color: #9dcaff; }
 
     footer {
-      padding: 25px;
       text-align: center;
-      color: #a9c3dc;
+      padding: 24px;
+      color: #9eacc0;
     }
+
+    footer a { color: #9dcaff; }
   </style>
 </head>
 <body>
   <header>
-    <h1>CP 24/7 Armies</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="map.html">World Map</a>
-      <a href="armies.html">Armies</a>
-      <a href="rankings.html">Rankings</a>
-      <a href="events.html">Events</a>
-      <a href="news.html">News</a>
-      <a href="rules.html">Rules</a>
-      <a href="staff.html">Staff</a>
-    </nav>
+    <h1>CP 24/7 Army Directory</h1>
+    <p>All registered armies, connected to the live bot database.</p>
   </header>
 
   <main>
-    <section class="intro">
-      <h2>Registered Armies</h2>
-      <p>
-        Browse armies competing in the Club Penguin 24/7 community.
-        Army registration and leadership information will come from
-        the connected Discord bot once integration is set up.
-      </p>
-      <input
-        id="search"
-        type="search"
-        placeholder="Search armies..."
-        aria-label="Search armies"
-      >
-    </section>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search armies or leaders...">
+      <button id="refresh" type="button">Refresh Armies</button>
+    </div>
 
-    <section id="armies" aria-live="polite"></section>
+    <p id="status" role="status">Connecting to the bot...</p>
+    <section id="army-list" aria-label="Registered armies"></section>
   </main>
 
-  <footer>Club Penguin 24/7 · Army Directory</footer>
+  <footer>
+    Club Penguin 24/7<br>
+    <a href="index.html">Home</a> ·
+    <a href="map.html">World Map</a> ·
+    <a href="rankings.html">Top 10 Rankings</a>
+  </footer>
 
   <script>
-    // Temporary sample data. Replace this with live bot data later.
-    const armies = [
-      {
-        name: "Example Army",
-        leaders: "Not yet connected",
-        color: "#48baff",
-        points: 1000
-      }
-    ];
+    const API_URL = "https://cpa-bot-8ihb.onrender.com/api/armies";
 
-    const container = document.getElementById("armies");
+    const list = document.getElementById("army-list");
+    const statusText = document.getElementById("status");
     const search = document.getElementById("search");
+    const refresh = document.getElementById("refresh");
 
-    function displayArmies() {
-      const term = search.value.toLowerCase();
+    let armies = [];
 
-      const matches = armies.filter(army =>
-        army.name.toLowerCase().includes(term) ||
-        army.leaders.toLowerCase().includes(term)
+    function validColor(color) {
+      return /^#[0-9a-f]{6}$/i.test(color) ? color : "#4aa8ff";
+    }
+
+    function element(tag, className, text) {
+      const node = document.createElement(tag);
+      node.className = className;
+      node.textContent = text;
+      return node;
+    }
+
+    function renderArmies() {
+      const query = search.value.trim().toLowerCase();
+
+      const filtered = armies.filter(army =>
+        army.name.toLowerCase().includes(query) ||
+        army.leaders.toLowerCase().includes(query)
       );
 
-      container.replaceChildren();
+      list.replaceChildren();
 
-      if (matches.length === 0) {
-        container.textContent = "No matching armies found.";
+      if (filtered.length === 0) {
+        statusText.textContent = armies.length
+          ? "No armies match your search."
+          : "No armies are registered yet.";
         return;
       }
 
-      matches.forEach(army => {
+      for (const army of filtered) {
         const card = document.createElement("article");
         card.className = "army";
-        card.style.borderTop = "4px solid " + army.color;
+        card.style.setProperty("--army-color", validColor(army.hex));
 
-        const title = document.createElement("h3");
-        title.textContent = army.name;
+        card.append(element("h2", "", army.name));
+        card.append(element(
+          "p", "points", army.points.toLocaleString() + " points"
+        ));
+        card.append(element(
+          "p", "detail", "Leaders: " + (army.leaders || "Not listed")
+        ));
+        card.append(element(
+          "p", "detail",
+          "Owned land: " + (army.land.length ? army.land.join(", ") : "None")
+        ));
 
-        const leaders = document.createElement("p");
-        leaders.textContent = "Leaders: " + army.leaders;
+        if (/^https?:\/\//i.test(army.link)) {
+          try {
+            const url = new URL(army.link);
+            if (url.protocol === "https:" || url.protocol === "http:") {
+              const link = element("a", "", "Visit Army Server");
+              link.href = url.href;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer";
+              card.append(link);
+            }
+          } catch (_) {}
+        }
 
-        const points = document.createElement("p");
-        points.className = "points";
-        points.textContent = Number(army.points).toLocaleString() + " points";
+        list.append(card);
+      }
 
-        const note = document.createElement("p");
-        note.className = "note";
-        note.textContent = "Sample listing — live data not connected yet.";
-
-        card.append(title, leaders, points, note);
-        container.appendChild(card);
-      });
+      statusText.textContent =
+        `Showing ${filtered.length} of ${armies.length} registered armies.`;
     }
 
-    search.addEventListener("input", displayArmies);
-    displayArmies();
+    async function loadArmies() {
+      refresh.disabled = true;
+      statusText.textContent = "Loading registered armies...";
+
+      try {
+        const response = await fetch(API_URL, { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error("API returned HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.armies)) {
+          throw new Error("The API returned an unexpected response.");
+        }
+
+        armies = data.armies.map(item => ({
+          name: String(item.name || "Unnamed army"),
+          points: Number(item.points) || 0,
+          hex: String(item.hex || "#4aa8ff"),
+          link: String(item.link || ""),
+          leaders: String(item.leaders || ""),
+          land: Array.isArray(item.land) ? item.land.map(String) : []
+        }));
+
+        renderArmies();
+      } catch (error) {
+        console.error("Army directory error:", error);
+        list.replaceChildren();
+        statusText.textContent =
+          "Couldn't load armies. Check whether the bot is online and the armies API is working.";
+      } finally {
+        refresh.disabled = false;
+      }
+    }
+
+    search.addEventListener("input", renderArmies);
+    refresh.addEventListener("click", loadArmies);
+
+    loadArmies();
+
+    // Refresh automatically every 60 seconds.
+    setInterval(loadArmies, 60000);
   </script>
 </body>
-      </html>
+</html>
