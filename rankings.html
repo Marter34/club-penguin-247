@@ -1,161 +1,266 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CP 24/7 | Army Rankings</title>
+  <title>CP 24/7 — Top 10 Army Rankings</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #071629;
-      color: #eef7ff;
+      background: #101827;
+      color: #f3f6fc;
     }
 
     header {
-      background: #102b4c;
-      padding: 22px 15px;
       text-align: center;
-      border-bottom: 2px solid #48baff;
+      padding: 30px 16px;
+      background: #172b49;
+      border-bottom: 2px solid #4aa8ff;
     }
 
-    nav a {
-      display: inline-block;
-      margin: 6px;
-      color: #b9e5ff;
-      text-decoration: none;
-    }
-
-    nav a:hover { color: white; }
+    header h1 { margin: 0 0 8px; }
+    header p { margin: 0; color: #c3d5ed; }
 
     main {
-      max-width: 1000px;
+      max-width: 900px;
       margin: auto;
-      padding: 25px 16px;
+      padding: 20px 14px;
     }
 
-    .intro, .table-wrap {
-      background: #102541;
-      border: 1px solid #244d75;
-      border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 20px;
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
     }
 
-    .table-wrap { overflow-x: auto; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 440px;
+    button {
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #2686e8;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
     }
 
-    th, td {
-      text-align: left;
-      padding: 14px 12px;
-      border-bottom: 1px solid #244d75;
+    button:disabled { opacity: .6; }
+
+    #status {
+      color: #c3d5ed;
+      line-height: 1.5;
     }
 
-    th { color: #75d0ff; }
+    #leaderboard {
+      display: grid;
+      gap: 12px;
+    }
 
-    tbody tr:hover { background: #173454; }
+    .army {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      background: #1b2739;
+      border: 1px solid #344660;
+      border-left: 5px solid var(--army-color, #4aa8ff);
+      border-radius: 10px;
+    }
 
-    .rank {
+    .position {
+      min-width: 48px;
+      font-size: 24px;
       font-weight: bold;
-      color: #75d0ff;
+      text-align: center;
+      color: #9dcaff;
     }
 
-    .note {
-      color: #b9cce0;
-      font-size: 14px;
+    .details { min-width: 0; flex: 1; }
+    .details h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .points {
+      margin: 0;
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .leaders {
+      margin: 6px 0 0;
+      color: #c3d5ed;
+      overflow-wrap: anywhere;
+    }
+
+    .discord-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: #9dcaff;
     }
 
     footer {
+      padding: 24px;
       text-align: center;
-      padding: 25px;
-      color: #a9c3dc;
+      color: #9eacc0;
+    }
+
+    footer a { color: #9dcaff; }
+
+    @media (max-width: 420px) {
+      .army { padding: 12px; gap: 10px; }
+      .position { min-width: 36px; font-size: 20px; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>CP 24/7 Army Rankings</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="map.html">World Map</a>
-      <a href="armies.html">Armies</a>
-      <a href="rankings.html">Rankings</a>
-      <a href="events.html">Events</a>
-      <a href="news.html">News</a>
-      <a href="rules.html">Rules</a>
-      <a href="staff.html">Staff</a>
-    </nav>
+    <h1>CP 24/7 Top 10 Armies</h1>
+    <p>The ten highest-scoring registered armies.</p>
   </header>
 
   <main>
-    <section class="intro">
-      <h2>Top 10 Armies</h2>
-      <p>Rankings are ordered by points, highest first.</p>
-      <p class="note">
-        These are demonstration entries, not official CP 24/7 scores.
-        Live monthly rankings will be connected to the bot later.
-      </p>
-    </section>
+    <div class="toolbar">
+      <button id="refresh" type="button">Refresh Rankings</button>
+    </div>
 
-    <section class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Army</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-        <tbody id="rankingRows"></tbody>
-      </table>
-    </section>
+    <p id="status" role="status">Loading leaderboard...</p>
+    <section id="leaderboard" aria-label="Top 10 armies"></section>
   </main>
 
-  <footer>Club Penguin 24/7 · Army Rankings</footer>
+  <footer>
+    Club Penguin 24/7<br>
+    <a href="index.html">Home</a> ·
+    <a href="armies.html">Army Directory</a> ·
+    <a href="map.html">World Map</a>
+  </footer>
 
   <script>
-    // Temporary demonstration data; replace with live bot data later.
-    const armies = [
-      { name: "Example Army A", points: 1250 },
-      { name: "Example Army B", points: 1180 },
-      { name: "Example Army C", points: 1100 },
-      { name: "Example Army D", points: 1050 },
-      { name: "Example Army E", points: 1000 },
-      { name: "Example Army F", points: 950 },
-      { name: "Example Army G", points: 900 },
-      { name: "Example Army H", points: 850 },
-      { name: "Example Army I", points: 800 },
-      { name: "Example Army J", points: 750 }
-    ];
+    const API_URL = "https://cpa-bot-8ihb.onrender.com/api/armies";
 
-    const rows = document.getElementById("rankingRows");
+    const leaderboard = document.getElementById("leaderboard");
+    const statusText = document.getElementById("status");
+    const refreshButton = document.getElementById("refresh");
 
-    armies
-      .sort((a, b) => b.points - a.points)
-      .slice(0, 10)
-      .forEach((army, index) => {
-        const row = document.createElement("tr");
+    function safeColor(color) {
+      return /^#[0-9a-fA-F]{6}$/.test(color)
+        ? color
+        : "#4aa8ff";
+    }
 
-        const rankCell = document.createElement("td");
-        rankCell.className = "rank";
-        rankCell.textContent = "#" + (index + 1);
+    function makeElement(tag, className, text) {
+      const element = document.createElement(tag);
+      element.className = className;
+      element.textContent = text;
+      return element;
+    }
 
-        const nameCell = document.createElement("td");
-        nameCell.textContent = army.name;
+    async function loadRankings() {
+      refreshButton.disabled = true;
+      statusText.textContent = "Loading the latest army scores...";
 
-        const pointsCell = document.createElement("td");
-        pointsCell.textContent = army.points.toLocaleString();
+      try {
+        const response = await fetch(API_URL, { cache: "no-store" });
 
-        row.append(rankCell, nameCell, pointsCell);
-        rows.appendChild(row);
-      });
+        if (!response.ok) {
+          throw new Error("API returned HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.armies)) {
+          throw new Error("Unexpected API response.");
+        }
+
+        const armies = data.armies
+          .map(army => ({
+            name: String(army.name || "Unnamed army"),
+            points: Number(army.points) || 0,
+            hex: String(army.hex || "#4aa8ff"),
+            leaders: String(army.leaders || ""),
+            link: String(army.link || "")
+          }))
+          .sort((a, b) => b.points - a.points)
+          .slice(0, 10);
+
+        leaderboard.replaceChildren();
+
+        if (armies.length === 0) {
+          statusText.textContent = "No registered armies to rank yet.";
+          return;
+        }
+
+        armies.forEach((army, index) => {
+          const card = document.createElement("article");
+          card.className = "army";
+          card.style.setProperty("--army-color", safeColor(army.hex));
+
+          const position = makeElement(
+            "div",
+            "position",
+            "#" + (index + 1)
+          );
+
+          const details = document.createElement("div");
+          details.className = "details";
+
+          const name = makeElement("h2", "", army.name);
+          const points = makeElement(
+            "p",
+            "points",
+            army.points.toLocaleString() + " points"
+          );
+
+          details.append(name, points);
+
+          if (army.leaders) {
+            details.append(
+              makeElement("p", "leaders", "Leaders: " + army.leaders)
+            );
+          }
+
+          if (/^https?:\/\//i.test(army.link)) {
+            try {
+              const url = new URL(army.link);
+
+              if (url.protocol === "https:" || url.protocol === "http:") {
+                const link = makeElement(
+                  "a",
+                  "discord-link",
+                  "Visit Army"
+                );
+                link.href = url.href;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                details.append(link);
+              }
+            } catch (_) {}
+          }
+
+          card.append(position, details);
+          leaderboard.append(card);
+        });
+
+        statusText.textContent =
+          "Showing the Top " + armies.length +
+          " armies, sorted by current points.";
+      } catch (error) {
+        console.error("Could not load rankings:", error);
+        leaderboard.replaceChildren();
+        statusText.textContent =
+          "Unable to load rankings. Please try again when the bot API is available.";
+      } finally {
+        refreshButton.disabled = false;
+      }
+    }
+
+    refreshButton.addEventListener("click", loadRankings);
+    loadRankings();
   </script>
 </body>
 </html>
