@@ -1,0 +1,531 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#12345a">
+  <meta name="description" content="The official Club Penguin 24/7 community website.">
+  <title>Club Penguin 24/7 | Official Website</title>
+
+  <style>
+    :root {
+      --navy: #102b4e;
+      --blue: #2469a8;
+      --ice: #e9f7ff;
+      --white: #ffffff;
+      --gold: #ffda79;
+      --text: #173553;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #f0f8ff;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    a { color: inherit; }
+
+    .announcement {
+      padding: 10px 16px;
+      text-align: center;
+      background: #ffe9a8;
+      color: #4e3a0b;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    header {
+      background: var(--navy);
+      color: white;
+      border-bottom: 4px solid #78c9f5;
+    }
+
+    .nav {
+      max-width: 1150px;
+      margin: auto;
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .brand {
+      text-decoration: none;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .brand span { color: var(--gold); }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #e9f6ff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .nav-links a:hover { color: var(--gold); }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 80px 22px;
+      color: white;
+      background:
+        radial-gradient(ellipse at 50% 110%, #ffffff 0%, transparent 40%),
+        linear-gradient(155deg, #14365e 0%, #247db8 55%, #9de2ff 100%);
+    }
+
+    .snow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .8;
+      background-image:
+        radial-gradient(circle, white 2px, transparent 3px),
+        radial-gradient(circle, white 1px, transparent 2px);
+      background-size: 83px 83px, 47px 47px;
+      background-position: 0 0, 21px 30px;
+    }
+
+    .hero-content {
+      position: relative;
+      max-width: 780px;
+      margin: auto;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      font-size: clamp(37px, 8vw, 68px);
+      line-height: 1.04;
+      margin: 23px 0 16px;
+    }
+
+    .hero p {
+      max-width: 590px;
+      margin: 0 auto;
+      line-height: 1.8;
+      color: #e7f7ff;
+      font-size: 17px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 13px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .button-primary {
+      background: var(--gold);
+      color: #283b50;
+    }
+
+    .button-secondary {
+      background: rgba(255,255,255,.13);
+      color: white;
+      border: 1px solid rgba(255,255,255,.65);
+    }
+
+    .penguin {
+      font-size: 68px;
+      margin-top: 25px;
+    }
+</style>
+</head>
+<body>
+  <div class="announcement">
+    WELCOME TO CLUB PENGUIN 24/7 — THE COMMUNITY HUB
+  </div>
+
+  <header>
+    <nav class="nav" aria-label="Main navigation">
+      <a class="brand" href="index.html">
+        CLUB PENGUIN <span>24/7</span>
+      </a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="map.html">World Map</a>
+        <a href="armies.html">Armies</a>
+        <a href="rankings.html">Rankings</a>
+        <a href="events.html">Events</a>
+        <a href="news.html">News</a>
+        <a href="rules.html">Rules</a>
+        <a href="staff.html">Staff</a>
+      </div>
+    </nav>
+  </header>
+  
+  <main>
+    <section class="hero" id="home">
+      <div class="snow"></div>
+      <div class="hero-content">
+        <span class="eyebrow">
+          YOUR COMMUNITY. YOUR BATTLES. YOUR WORLD.
+        </span>
+
+        <h1>Welcome to<br>Club Penguin 24/7</h1>
+
+        <p>
+          Discover the armies, explore the world map, follow
+          the rankings, and stay up to date with battles and
+          community announcements — all in one place.
+        </p>
+
+        <div class="buttons">
+          <a class="button button-primary" href="map.html">
+            Explore the World Map
+          </a>
+          <a class="button button-secondary" href="rankings.html">
+            View Army Rankings
+          </a>
+        </div>
+
+        <div class="penguin" aria-hidden="true">🐧</div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <strong>25</strong>
+        <span>MAP SERVERS</span>
+      </div>
+      <div class="stat">
+        <strong>1,000</strong>
+        <span>STARTING ARMY POINTS</span>
+      </div>
+      <div class="stat">
+        <strong>24/7</strong>
+        <span>COMMUNITY HUB</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <h2>Everything in One Place</h2>
+        <p>
+          Your central hub for the Club Penguin 24/7 community.
+        </p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card-icon">🗺️</div>
+          <h3>The World Map</h3>
+          <p>
+            Explore all 25 map servers and discover which armies
+            control each territory.
+          </p>
+          <a class="tag" href="map.html">EXPLORE THE MAP →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🏆</div>
+          <h3>Army Rankings</h3>
+          <p>
+            Follow army points, battle records, tournament
+            results, and monthly champions.
+          </p>
+          <a class="tag" href="rankings.html">VIEW RANKINGS →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">⚔️</div>
+          <h3>Battles & Events</h3>
+          <p>
+            Keep up with approved invasions, scheduled battles,
+            tournaments, and official results.
+          </p>
+          <a class="tag" href="events.html">VIEW EVENTS →</a>
+        </article>
+        
+        <article class="card">
+          <div class="card-icon">📢</div>
+          <h3>Official News</h3>
+          <p>
+            Read community announcements, leadership updates,
+            competition news, and important notices.
+          </p>
+          <a class="tag" href="news.html">READ THE NEWS →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">📜</div>
+          <h3>Rules & Guidelines</h3>
+          <p>
+            Learn the rules for map ownership, battles,
+            invasions, fair play, and community conduct.
+          </p>
+          <a class="tag" href="rules.html">READ THE RULES →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>Staff Portal</h3>
+          <p>
+            Authorized staff will eventually manage armies,
+            territory, scores, events, and announcements here.
+          </p>
+          <a class="tag" href="staff.html">STAFF ACCESS →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="map-banner">
+        <div>
+          <h2>Twenty-five servers. One world.</h2>
+          <p>
+            From Frosty Falls to Polar Point, the CP 24/7 world
+            map is the home of territory, competition, and
+            strategic battles.
+          </p>
+          <div class="buttons" style="justify-content:flex-start">
+            <a class="button button-primary" href="map.html">
+              Open the World Map
+            </a>
+          </div>
+        </div>
+        <div class="map-symbol" aria-hidden="true">❄️</div>
+      </div>
+    </section>
+    
+    <section class="community">
+      <h2>Be Part of the Community</h2>
+      <p>
+        Club Penguin 24/7 brings together armies, leaders,
+        competitors, and community members. Check the official
+        news and events to stay informed.
+      </p>
+      <div class="buttons">
+        <a class="button button-primary" href="news.html">
+          Latest Announcements
+        </a>
+        <a class="button button-secondary"
+           style="background:#fff;color:#173553;border-color:#b7d9ef"
+           href="rules.html">
+          Community Rules
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Club Penguin 24/7</strong><br>
+    A community for armies, battles, and friendly competition.<br>
+    <a href="rules.html">Rules</a> ·
+    <a href="news.html">News</a> ·
+    <a href="staff.html">Staff Portal</a>
+    <p>
+      Community-run fan project. Not affiliated with Disney
+      or the original Club Penguin.
+    </p>
+  </footer>
+
+  <style>
+    .stats {
+      max-width: 920px;
+      margin: -24px auto 0;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      position: relative;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid #d4eafa;
+      border-radius: 15px;
+      padding: 22px 12px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(26,76,113,.08);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 27px;
+      color: var(--blue);
+    }
+
+    .stat span {
+      display: block;
+      font-size: 12px;
+      color: #5b7187;
+      margin-top: 7px;
+    }
+
+    .section {
+      max-width: 1120px;
+      margin: auto;
+      padding: 65px 22px;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section-heading h2 {
+      color: var(--navy);
+      font-size: clamp(26px, 5vw, 37px);
+      margin: 0 0 10px;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: #647b90;
+      line-height: 1.7;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #d7e9f7;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 6px 22px rgba(27,68,102,.05);
+    }
+
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 13px;
+    }
+
+    .card h3 {
+      color: var(--navy);
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .card p {
+      color: #62778a;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 9px;
+      background: var(--ice);
+      color: #24608e;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .map-banner {
+      background: linear-gradient(120deg, #12345a, #2469a8);
+      color: white;
+      border-radius: 20px;
+      padding: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .map-banner h2 {
+      font-size: 28px;
+      margin: 0 0 10px;
+    }
+
+    .map-banner p {
+      max-width: 580px;
+      color: #dcefff;
+      line-height: 1.7;
+    }
+
+    .map-symbol {
+      font-size: 62px;
+    }
+
+    .community {
+      text-align: center;
+      background: #dff3ff;
+      padding: 55px 22px;
+    }
+
+    .community h2 {
+      color: var(--navy);
+      font-size: 30px;
+    }
+
+    .community p {
+      max-width: 600px;
+      margin: auto;
+      color: #526e86;
+      line-height: 1.7;
+    }
+
+    footer {
+      background: #0b2039;
+      color: #d6e8f8;
+      text-align: center;
+      padding: 27px 18px;
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    footer a {
+      color: #a7ddff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 760px) {
+      .nav { justify-content: center; }
+      .nav-links { justify-content: center; }
+      .cards { grid-template-columns: 1fr; }
+      .stats { gap: 8px; }
+      .stat strong { font-size: 22px; }
+      .stat span { font-size: 11px; }
+      .hero { padding-top: 65px; }
+      .map-banner { padding: 26px; }
+    }
+  </style>
+</body>
+  </html>
