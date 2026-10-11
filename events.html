@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP 24/7 | Events</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #071629;
+      color: #eef7ff;
+    }
+
+    header {
+      background: #102b4c;
+      padding: 22px 15px;
+      text-align: center;
+      border-bottom: 2px solid #48baff;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 6px;
+      color: #b9e5ff;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: white; }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 25px 16px;
+    }
+
+    .intro, .event {
+      background: #102541;
+      border: 1px solid #244d75;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .event h3 { color: #75d0ff; margin-top: 0; }
+
+    .tag {
+      display: inline-block;
+      background: #173e60;
+      border: 1px solid #48baff;
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 13px;
+    }
+
+    .muted { color: #b9cce0; }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #a9c3dc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CP 24/7 Events</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="map.html">World Map</a>
+      <a href="armies.html">Armies</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="events.html">Events</a>
+      <a href="news.html">News</a>
+      <a href="rules.html">Rules</a>
+      <a href="staff.html">Staff</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Upcoming Events</h2>
+      <p>
+        Find scheduled battles, invasions, tournaments, and community
+        activities here.
+      </p>
+      <p class="muted">
+        The entries below are examples. Official events will be connected
+        to the CP 24/7 Discord bot later.
+      </p>
+    </section>
+
+    <section id="events"></section>
+  </main>
+
+  <footer>Club Penguin 24/7 · Events Calendar</footer>
+
+  <script>
+    // Demonstration entries only. These are not official scheduled events.
+    const events = [
+      {
+        title: "Community Battle",
+        type: "Battle",
+        date: "To be announced",
+        time: "To be announced",
+        location: "Club Penguin 24/7",
+        details: "Example event — official details pending."
+      },
+      {
+        title: "Map Invasion",
+        type: "Invasion",
+        date: "To be announced",
+        time: "To be announced",
+        location: "World Map",
+        details: "Example event — check official announcements."
+      },
+      {
+        title: "Army Tournament",
+        type: "Tournament",
+        date: "To be announced",
+        time: "To be announced",
+        location: "To be announced",
+        details: "Example event — official details pending."
+      }
+    ];
+
+    const container = document.getElementById("events");
+
+    if (events.length === 0) {
+      container.textContent = "There are no upcoming events listed.";
+    } else {
+      events.forEach(event => {
+        const card = document.createElement("article");
+        card.className = "event";
+
+        const title = document.createElement("h3");
+        title.textContent = event.title;
+
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = event.type;
+
+        const date = document.createElement("p");
+        date.textContent = "Date: " + event.date;
+
+        const time = document.createElement("p");
+        time.textContent = "Time: " + event.time;
+
+        const location = document.createElement("p");
+        location.textContent = "Location: " + event.location;
+
+        const details = document.createElement("p");
+        details.className = "muted";
+        details.textContent = event.details;
+
+        card.append(title, tag, date, time, location, details);
+        container.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
