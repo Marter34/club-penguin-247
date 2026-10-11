@@ -292,7 +292,7 @@ small { color:var(--muted); }
           <p class="muted">${escapeHTML(safeDate)}${event.target_server ? " · " + escapeHTML(event.target_server) : ""}</p>
           <p>${escapeHTML(event.description)}</p>
           ${event.staff_notes ? `<p class="muted">Staff notes: ${escapeHTML(event.staff_notes)}</p>` : ""}
-          ${canSubmit ? actions + cancel : ""}
+          ${actions + cancel}
         </div>`;
       return details;
     }).join("");
