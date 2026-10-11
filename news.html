@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP 24/7 | News</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #071629;
+      color: #eef7ff;
+    }
+
+    header {
+      background: #102b4c;
+      padding: 22px 15px;
+      text-align: center;
+      border-bottom: 2px solid #48baff;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 6px;
+      color: #b9e5ff;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: white; }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 25px 16px;
+    }
+
+    .intro, .article {
+      background: #102541;
+      border: 1px solid #244d75;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .article h3 {
+      margin-top: 0;
+      color: #75d0ff;
+    }
+
+    .meta {
+      color: #a9c3dc;
+      font-size: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      background: #173e60;
+      border: 1px solid #48baff;
+      border-radius: 20px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #a9c3dc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CP 24/7 Newsroom</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="map.html">World Map</a>
+      <a href="armies.html">Armies</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="events.html">Events</a>
+      <a href="news.html">News</a>
+      <a href="rules.html">Rules</a>
+      <a href="staff.html">Staff</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Latest News</h2>
+      <p>
+        Official announcements, community updates, battle reports,
+        and other news from Club Penguin 24/7.
+      </p>
+      <p class="meta">
+        Sample articles are shown below. Official news will be connected
+        to the Discord bot later.
+      </p>
+    </section>
+
+    <section id="articles" aria-live="polite"></section>
+  </main>
+
+  <footer>Club Penguin 24/7 · Official Newsroom</footer>
+
+  <script>
+    // Temporary examples. Replace these with news from the bot API later.
+    const articles = [
+      {
+        title: "Welcome to the CP 24/7 Newsroom",
+        author: "CP 24/7 Staff",
+        date: "Example article",
+        category: "Announcement",
+        body: "Welcome to the official newsroom. Check here for community announcements, verified battle reports, and important updates."
+      },
+      {
+        title: "World Map Updates",
+        author: "CP 24/7 Staff",
+        date: "Example article",
+        category: "World Map",
+        body: "The world map lists the servers used by our community. Official ownership updates will be displayed once the website is connected to the bot."
+      }
+    ];
+
+    const container = document.getElementById("articles");
+
+    articles.forEach(article => {
+      const card = document.createElement("article");
+      card.className = "article";
+
+      const title = document.createElement("h3");
+      title.textContent = article.title;
+
+      const category = document.createElement("span");
+      category.className = "label";
+      category.textContent = article.category;
+
+      const meta = document.createElement("p");
+      meta.className = "meta";
+      meta.textContent = "By " + article.author + " · " + article.date;
+
+      const body = document.createElement("p");
+      body.textContent = article.body;
+
+      card.append(title, category, meta, body);
+      container.appendChild(card);
+    });
+
+    if (articles.length === 0) {
+      container.textContent = "No news articles have been published yet.";
+    }
+  </script>
+</body>
+</html>
