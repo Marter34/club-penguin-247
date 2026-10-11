@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CP 24/7 | Armies</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #071629;
+      color: #eef7ff;
+    }
+
+    header {
+      background: #102b4c;
+      padding: 22px 15px;
+      text-align: center;
+      border-bottom: 2px solid #48baff;
+    }
+
+    header h1 { margin-top: 0; }
+
+    nav a {
+      display: inline-block;
+      margin: 6px;
+      color: #b9e5ff;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: white; }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 25px 16px;
+    }
+
+    .intro, .army {
+      background: #102541;
+      border: 1px solid #244d75;
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .intro { margin-bottom: 20px; }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border: 1px solid #48baff;
+      border-radius: 8px;
+      background: #071629;
+      color: white;
+      font-size: 16px;
+    }
+
+    #armies {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 15px;
+    }
+
+    .army h3 {
+      margin-top: 0;
+      color: #75d0ff;
+    }
+
+    .points {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .note {
+      color: #b9cce0;
+      font-size: 14px;
+    }
+
+    footer {
+      padding: 25px;
+      text-align: center;
+      color: #a9c3dc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CP 24/7 Armies</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="map.html">World Map</a>
+      <a href="armies.html">Armies</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="events.html">Events</a>
+      <a href="news.html">News</a>
+      <a href="rules.html">Rules</a>
+      <a href="staff.html">Staff</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Registered Armies</h2>
+      <p>
+        Browse armies competing in the Club Penguin 24/7 community.
+        Army registration and leadership information will come from
+        the connected Discord bot once integration is set up.
+      </p>
+      <input
+        id="search"
+        type="search"
+        placeholder="Search armies..."
+        aria-label="Search armies"
+      >
+    </section>
+
+    <section id="armies" aria-live="polite"></section>
+  </main>
+
+  <footer>Club Penguin 24/7 · Army Directory</footer>
+
+  <script>
+    // Temporary sample data. Replace this with live bot data later.
+    const armies = [
+      {
+        name: "Example Army",
+        leaders: "Not yet connected",
+        color: "#48baff",
+        points: 1000
+      }
+    ];
+
+    const container = document.getElementById("armies");
+    const search = document.getElementById("search");
+
+    function displayArmies() {
+      const term = search.value.toLowerCase();
+
+      const matches = armies.filter(army =>
+        army.name.toLowerCase().includes(term) ||
+        army.leaders.toLowerCase().includes(term)
+      );
+
+      container.replaceChildren();
+
+      if (matches.length === 0) {
+        container.textContent = "No matching armies found.";
+        return;
+      }
+
+      matches.forEach(army => {
+        const card = document.createElement("article");
+        card.className = "army";
+        card.style.borderTop = "4px solid " + army.color;
+
+        const title = document.createElement("h3");
+        title.textContent = army.name;
+
+        const leaders = document.createElement("p");
+        leaders.textContent = "Leaders: " + army.leaders;
+
+        const points = document.createElement("p");
+        points.className = "points";
+        points.textContent = Number(army.points).toLocaleString() + " points";
+
+        const note = document.createElement("p");
+        note.className = "note";
+        note.textContent = "Sample listing — live data not connected yet.";
+
+        card.append(title, leaders, points, note);
+        container.appendChild(card);
+      });
+    }
+
+    search.addEventListener("input", displayArmies);
+    displayArmies();
+  </script>
+</body>
+      </html>
