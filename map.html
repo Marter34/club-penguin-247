@@ -1,143 +1,155 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CP 24/7 | World Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP 24/7 — World Map</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #071629;
-      color: #eef7ff;
+      background: #101827;
+      color: #f3f6fc;
     }
     header {
-      background: #102b4c;
-      padding: 22px 15px;
+      padding: 28px 16px;
       text-align: center;
-      border-bottom: 2px solid #48baff;
+      background: #172b49;
+      border-bottom: 2px solid #4aa8ff;
     }
-    header h1 { margin: 0 0 10px; }
-    nav a {
-      color: #b9e5ff;
-      margin: 6px;
-      display: inline-block;
-      text-decoration: none;
-    }
-    nav a:hover { color: white; }
-    main {
-      max-width: 1000px;
-      margin: auto;
-      padding: 25px 16px;
-    }
-    .intro, .server {
-      background: #102541;
-      border: 1px solid #244d75;
-      border-radius: 12px;
-      padding: 18px;
-    }
-    .intro { margin-bottom: 20px; }
-    input {
-      width: 100%;
-      padding: 13px;
+    h1 { margin: 0 0 8px; }
+    header p { margin: 0; color: #c3d5ed; }
+    main { max-width: 1000px; margin: auto; padding: 20px 14px; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    input, button {
+      padding: 12px;
       border-radius: 8px;
-      border: 1px solid #48baff;
-      background: #071629;
-      color: white;
+      border: 1px solid #40536e;
       font-size: 16px;
-      margin-top: 10px;
     }
+    input { flex: 1; min-width: 180px; background: #1b2739; color: white; }
+    button { background: #2686e8; color: white; cursor: pointer; }
+    #status { color: #c3d5ed; margin: 12px 0; }
     #servers {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 14px;
+      gap: 12px;
     }
-    .server h3 { margin-top: 0; color: #75d0ff; }
-    .status { color: #b9cce0; font-size: 14px; }
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #a9c3dc;
+    .server {
+      padding: 16px;
+      background: #1b2739;
+      border: 1px solid #344660;
+      border-radius: 10px;
     }
+    .server h2 { font-size: 17px; margin: 0 0 10px; }
+    .owner { color: #9dcaff; overflow-wrap: anywhere; }
+    .free { color: #a8e6b0; }
+    footer { text-align: center; padding: 24px; color: #9eacc0; }
+    a { color: #9dcaff; }
   </style>
 </head>
 <body>
   <header>
     <h1>CP 24/7 World Map</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="map.html">World Map</a>
-      <a href="armies.html">Armies</a>
-      <a href="rankings.html">Rankings</a>
-      <a href="events.html">Events</a>
-      <a href="news.html">News</a>
-      <a href="rules.html">Rules</a>
-      <a href="staff.html">Staff</a>
-    </nav>
+    <p>Check server ownership from the live bot database.</p>
   </header>
 
   <main>
-    <section class="intro">
-      <h2>Explore the CP 24/7 World</h2>
-      <p>Search the map to find a server. Ownership and army information will be connected to the live bot database in a later step.</p>
-      <input id="search" type="search"
-        placeholder="Search servers..."
-        aria-label="Search servers">
-    </section>
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search servers or owners...">
+      <button id="refresh" type="button">Refresh Map</button>
+    </div>
 
-    <section id="servers" aria-live="polite"></section>
+    <p id="status" role="status">Loading map...</p>
+    <section id="servers" aria-label="Server ownership"></section>
   </main>
 
-  <footer>Club Penguin 24/7 · World Map</footer>
+  <footer>
+    Club Penguin 24/7 · <a href="index.html">Home</a>
+  </footer>
 
   <script>
-    const serverNames = [
-      "Frosty Falls", "Penguin Peak", "Icy Isles",
-      "Snowdrift", "Polar Pines", "Crystal Cove",
-      "Frostbite Bay", "Winterwood", "Glacier Grove",
-      "Arctic Breeze", "Snowcap", "Frozen Fjord",
-      "Chill Valley", "Icicle Isle", "Blizzard Bay",
-      "Frostfall", "Penguin Pines", "Snowy Summit",
-      "Arctic Harbor", "Crystal Glacier", "Winter Wave",
-      "Frosty Harbor", "Icebound", "Snowstorm",
-      "Polar Point"
-    ];
+    const API_URL = "https://cpa-bot-8ihb.onrender.com/api/map";
+    const serverList = document.getElementById("servers");
+    const statusText = document.getElementById("status");
+    const searchInput = document.getElementById("search");
+    const refreshButton = document.getElementById("refresh");
 
-    const container = document.getElementById("servers");
-    const search = document.getElementById("search");
+    let allServers = [];
 
-    function displayServers() {
-      const term = search.value.toLowerCase();
-      const matches = serverNames.filter(name =>
-        name.toLowerCase().includes(term)
+    function renderServers() {
+      const query = searchInput.value.trim().toLowerCase();
+      const filtered = allServers.filter(server =>
+        server.name.toLowerCase().includes(query) ||
+        server.owner.toLowerCase().includes(query)
       );
 
-      container.innerHTML = "";
+      serverList.replaceChildren();
 
-      if (matches.length === 0) {
-        container.textContent = "No matching servers found.";
+      if (!filtered.length) {
+        statusText.textContent = allServers.length
+          ? "No servers match your search."
+          : "No server data was returned by the API.";
         return;
       }
 
-      matches.forEach(name => {
+      for (const server of filtered) {
         const card = document.createElement("article");
         card.className = "server";
 
-        const title = document.createElement("h3");
-        title.textContent = name;
+        const name = document.createElement("h2");
+        name.textContent = server.name;
 
-        const status = document.createElement("p");
-        status.className = "status";
-        status.textContent = "Ownership: Awaiting live database";
+        const owner = document.createElement("p");
+        owner.className = "owner" +
+          (server.owner.toLowerCase() === "freeland" ? " free" : "");
+        owner.textContent = "Owner: " + server.owner;
 
-        card.append(title, status);
-        container.appendChild(card);
-      });
+        card.append(name, owner);
+        serverList.append(card);
+      }
+
+      statusText.textContent =
+        `Showing ${filtered.length} of ${allServers.length} servers.`;
     }
 
-    search.addEventListener("input", displayServers);
-    displayServers();
+    async function loadMap() {
+      refreshButton.disabled = true;
+      statusText.textContent = "Loading live map data...";
+
+      try {
+        const response = await fetch(API_URL, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("API returned HTTP " + response.status);
+        }
+
+        const data = await response.json();
+        if (!data.success || !Array.isArray(data.servers)) {
+          throw new Error("The API response format was unexpected.");
+        }
+
+        allServers = data.servers.map(server => ({
+          name: String(server.name || "Unknown server"),
+          owner: String(server.owner || "Freeland")
+        }));
+
+        renderServers();
+      } catch (error) {
+        console.error("Map loading failed:", error);
+        serverList.replaceChildren();
+        statusText.textContent =
+          "Could not load the map. The bot service may be starting up, or its API may need fixing. Try again shortly.";
+      } finally {
+        refreshButton.disabled = false;
+      }
+    }
+
+    searchInput.addEventListener("input", renderServers);
+    refreshButton.addEventListener("click", loadMap);
+
+    loadMap();
   </script>
 </body>
-  </html>
+</html>
