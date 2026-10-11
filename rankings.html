@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CP 24/7 | Army Rankings</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #071629;
+      color: #eef7ff;
+    }
+
+    header {
+      background: #102b4c;
+      padding: 22px 15px;
+      text-align: center;
+      border-bottom: 2px solid #48baff;
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 6px;
+      color: #b9e5ff;
+      text-decoration: none;
+    }
+
+    nav a:hover { color: white; }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 25px 16px;
+    }
+
+    .intro, .table-wrap {
+      background: #102541;
+      border: 1px solid #244d75;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 440px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid #244d75;
+    }
+
+    th { color: #75d0ff; }
+
+    tbody tr:hover { background: #173454; }
+
+    .rank {
+      font-weight: bold;
+      color: #75d0ff;
+    }
+
+    .note {
+      color: #b9cce0;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #a9c3dc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CP 24/7 Army Rankings</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="map.html">World Map</a>
+      <a href="armies.html">Armies</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="events.html">Events</a>
+      <a href="news.html">News</a>
+      <a href="rules.html">Rules</a>
+      <a href="staff.html">Staff</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Top 10 Armies</h2>
+      <p>Rankings are ordered by points, highest first.</p>
+      <p class="note">
+        These are demonstration entries, not official CP 24/7 scores.
+        Live monthly rankings will be connected to the bot later.
+      </p>
+    </section>
+
+    <section class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Army</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody id="rankingRows"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>Club Penguin 24/7 · Army Rankings</footer>
+
+  <script>
+    // Temporary demonstration data; replace with live bot data later.
+    const armies = [
+      { name: "Example Army A", points: 1250 },
+      { name: "Example Army B", points: 1180 },
+      { name: "Example Army C", points: 1100 },
+      { name: "Example Army D", points: 1050 },
+      { name: "Example Army E", points: 1000 },
+      { name: "Example Army F", points: 950 },
+      { name: "Example Army G", points: 900 },
+      { name: "Example Army H", points: 850 },
+      { name: "Example Army I", points: 800 },
+      { name: "Example Army J", points: 750 }
+    ];
+
+    const rows = document.getElementById("rankingRows");
+
+    armies
+      .sort((a, b) => b.points - a.points)
+      .slice(0, 10)
+      .forEach((army, index) => {
+        const row = document.createElement("tr");
+
+        const rankCell = document.createElement("td");
+        rankCell.className = "rank";
+        rankCell.textContent = "#" + (index + 1);
+
+        const nameCell = document.createElement("td");
+        nameCell.textContent = army.name;
+
+        const pointsCell = document.createElement("td");
+        pointsCell.textContent = army.points.toLocaleString();
+
+        row.append(rankCell, nameCell, pointsCell);
+        rows.appendChild(row);
+      });
+  </script>
+</body>
+</html>
