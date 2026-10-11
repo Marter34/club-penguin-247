@@ -1,179 +1,453 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CP 24/7 | Staff</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #071629;
-      color: #eef7ff;
-      line-height: 1.6;
-    }
-
-    header {
-      background: #102b4c;
-      padding: 22px 15px;
-      text-align: center;
-      border-bottom: 2px solid #48baff;
-    }
-
-    nav a {
-      display: inline-block;
-      margin: 6px;
-      color: #b9e5ff;
-      text-decoration: none;
-    }
-
-    nav a:hover { color: white; }
-
-    main {
-      max-width: 950px;
-      margin: auto;
-      padding: 25px 16px;
-    }
-
-    .intro, .staff-card, .chain {
-      background: #102541;
-      border: 1px solid #244d75;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
-
-    h2, h3 { color: #75d0ff; }
-
-    .role {
-      display: inline-block;
-      padding: 5px 10px;
-      border: 1px solid #48baff;
-      border-radius: 20px;
-      background: #173e60;
-      font-size: 13px;
-    }
-
-    .chain ol li { margin-bottom: 12px; }
-
-    .muted {
-      color: #b9cce0;
-      font-size: 14px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #a9c3dc;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CP 24/7 | Staff Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#090d16; --panel:#111827; --panel2:#182235;
+  --text:#f3f6ff; --muted:#9caac2; --accent:#68a5ff;
+  --border:#28354b; --green:#42d392; --red:#ff6b7a;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;
+}
+header {
+  padding:22px; border-bottom:1px solid var(--border);
+  background:#0d1422;
+}
+header h1 { margin:0; font-size:23px; }
+header p { margin:4px 0 0; color:var(--muted); }
+main { max-width:1050px; margin:auto; padding:22px; }
+.panel {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:14px; padding:20px; margin-bottom:18px;
+}
+h2 { font-size:19px; margin:0 0 14px; }
+h3 { font-size:16px; margin:0 0 8px; }
+label { display:block; color:var(--muted); margin:12px 0 5px; }
+input,select,textarea {
+  display:block; width:100%; padding:11px 12px;
+  color:var(--text); background:#0b1220;
+  border:1px solid var(--border); border-radius:8px;
+  font:inherit;
+}
+textarea { min-height:90px; resize:vertical; }
+button {
+  border:0; border-radius:8px; padding:10px 14px;
+  background:var(--accent); color:#07101e;
+  font-weight:700; cursor:pointer; margin:8px 6px 0 0;
+}
+button.secondary { background:var(--panel2); color:var(--text); border:1px solid var(--border); }
+button.danger { background:#53212b; color:#ffdce1; }
+button:disabled { opacity:.5; cursor:not-allowed; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.muted { color:var(--muted); }
+.status { padding:10px 12px; background:var(--panel2); border-radius:8px; margin:12px 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.event { padding:16px 0; border-top:1px solid var(--border); }
+.pill { display:inline-block; border:1px solid var(--border); padding:3px 8px; border-radius:20px; color:var(--muted); font-size:12px; }
+#dashboard,#loginPanel { display:none; }
+small { color:var(--muted); }
+@media(max-width:650px) {
+  main { padding:12px; }
+  .panel { padding:15px; }
+  .grid { grid-template-columns:1fr; }
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>CP 24/7 Staff & Leadership</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="map.html">World Map</a>
-      <a href="armies.html">Armies</a>
-      <a href="rankings.html">Rankings</a>
-      <a href="events.html">Events</a>
-      <a href="news.html">News</a>
-      <a href="rules.html">Rules</a>
-      <a href="staff.html">Staff</a>
-    </nav>
-  </header>
+<header>
+  <h1>CP 24/7 Staff Portal</h1>
+  <p>Staff operations · Battles · Invasions · Publishing</p>
+</header>
 
-  <main>
-    <section class="intro">
-      <h2>Meet the Team</h2>
-      <p>
-        Club Penguin 24/7 relies on staff to maintain the map,
-        support participating armies, verify reports, and keep events fair.
-      </p>
-      <p class="muted">
-        These are role descriptions, not a live staff directory.
-        Names and current appointments will be added when connected to
-        the approved staff data source.
-      </p>
-    </section>
+<main>
+  <div id="notice" class="status">Connecting to Supabase…</div>
 
-    <section class="chain">
-      <h2>Chain of Command</h2>
-      <ol>
-        <li>
-          <strong>Owner / Executive Leadership</strong><br>
-          <span class="muted">
-            Oversees the community, major policies, and final appeals.
-          </span>
-        </li>
-        <li>
-          <strong>Head Officers</strong><br>
-          <span class="muted">
-            Manage map administration, army registration, land changes,
-            and staff operations within their permissions.
-          </span>
-        </li>
-        <li>
-          <strong>Editor-in-Chief</strong><br>
-          <span class="muted">
-            Oversees official news reports and newsroom standards.
-          </span>
-        </li>
-        <li>
-          <strong>Other Appointed Staff</strong><br>
-          <span class="muted">
-            Assist with assigned duties, event verification, and community support.
-          </span>
-        </li>
-      </ol>
-      <p class="muted">
-        This is a proposed display order. Adjust it to match your official
-        leadership structure and permissions.
-      </p>
-    </section>
+  <section id="loginPanel" class="panel">
+    <h2>Staff sign in</h2>
+    <p class="muted">Use the email address and password for your invited staff account.</p>
+    <form id="loginForm">
+      <label for="email">Email address</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button type="submit">Sign in</button>
+    </form>
+  </section>
 
-    <section class="staff-card">
-      <span class="role">Leadership</span>
-      <h3>Owner / Executive Leadership</h3>
-      <p>
-        Maintains the overall direction of CP 24/7, reviews major disputes,
-        and ensures staff systems operate fairly.
-      </p>
-    </section>
+  <section id="dashboard">
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2>Staff dashboard</h2>
+          <div id="staffIdentity" class="muted"></div>
+        </div>
+        <button id="logout" class="secondary">Sign out</button>
+      </div>
+    </div>
 
-    <section class="staff-card">
-      <span class="role">Administration</span>
-      <h3>Head Officers</h3>
-      <p>
-        Administer map ownership, register and remove armies, and oversee
-        approved land changes according to official rules.
-      </p>
-    </section>
+    <div class="panel">
+      <h2>Submit a battle or invasion</h2>
+      <form id="eventForm">
+        <label for="eventType">Event type</label>
+        <select id="eventType" required>
+          <option value="battle">Battle</option>
+          <option value="invasion">Invasion</option>
+        </select>
 
-    <section class="staff-card">
-      <span class="role">Newsroom</span>
-      <h3>Editor-in-Chief</h3>
-      <p>
-        Publishes official news, checks reports for accuracy, and maintains
-        the quality of community announcements.
-      </p>
-    </section>
+        <label for="title">Event title</label>
+        <input id="title" maxlength="150" required placeholder="Example: Army A vs Army B">
 
-    <section class="staff-card">
-      <span class="role">Staff Standards</span>
-      <h3>Responsibilities of All Staff</h3>
-      <ul>
-        <li>Remain professional, fair, and respectful.</li>
-        <li>Keep evidence for important decisions and disputed reports.</li>
-        <li>Never misuse permissions for personal advantage.</li>
-        <li>Protect private staff and community information.</li>
-        <li>Follow official rules and document significant actions.</li>
-      </ul>
-    </section>
-  </main>
+        <div class="grid">
+          <div>
+            <label for="attacker">Attacking army</label>
+            <input id="attacker" maxlength="100" required>
+          </div>
+          <div>
+            <label for="defender">Defending army (if applicable)</label>
+            <input id="defender" maxlength="100">
+          </div>
+        </div>
 
-  <footer>Club Penguin 24/7 · Leadership, Accountability, Fairness</footer>
+        <label for="server">Target server (mainly for invasions)</label>
+        <select id="server">
+          <option value="">Select a server</option>
+          <option>Frosty Falls</option>
+          <option>Penguin Peak</option>
+          <option>Icy Isles</option>
+          <option>Snowdrift</option>
+          <option>Polar Pines</option>
+          <option>Crystal Cove</option>
+          <option>Frostbite Bay</option>
+          <option>Winterwood</option>
+          <option>Glacier Grove</option>
+          <option>Arctic Breeze</option>
+          <option>Snowcap</option>
+          <option>Frozen Fjord</option>
+          <option>Chill Valley</option>
+          <option>Icicle Isle</option>
+          <option>Blizzard Bay</option>
+          <option>Frostfall</option>
+          <option>Penguin Pines</option>
+          <option>Snowy Summit</option>
+          <option>Arctic Harbor</option>
+          <option>Crystal Glacier</option>
+          <option>Winter Wave</option>
+          <option>Frosty Harbor</option>
+          <option>Icebound</option>
+          <option>Snowstorm</option>
+          <option>Polar Point</option>
+        </select>
+
+        <label for="eventTime">Scheduled date and time</label>
+        <input id="eventTime" type="datetime-local" required>
+
+        <label for="description">Details</label>
+        <textarea id="description" maxlength="4000" placeholder="Additional event information"></textarea>
+
+        <button type="submit">Submit for approval</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Event approval queue</h2>
+      <p class="muted">Authorized reviewers can approve or reject pending events.</p>
+      <button id="refresh" class="secondary">Refresh events</button>
+      <div id="eventsList"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const SUPABASE_URL = "https://besnvalhzxslhnfescwg.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_92dqeY6t1T5n2neWFmvkYQ_InPJ3UtS";
+
+  const notice = document.getElementById("notice");
+  const loginPanel = document.getElementById("loginPanel");
+  const dashboard = document.getElementById("dashboard");
+  const eventsList = document.getElementById("eventsList");
+
+  const REVIEWERS = [
+    "Chief Executive Producer",
+    "Head Officer",
+    "Editor In Chief",
+    "Head Reporter",
+    "Head Moderator"
+  ];
+
+  const SUBMITTERS = [
+    "Chief Executive Producer",
+    "Head Officer",
+    "Head Reporter",
+    "Reporter",
+    "Reporter in Training",
+    "Head Moderator",
+    "Moderator"
+  ];
+
+  let supabase;
+  let currentUser = null;
+  let currentStaff = null;
+  let busy = false;
+
+  function message(text) {
+    notice.textContent = text;
+    notice.hidden = false;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;",
+      '"':"&quot;", "'":"&#39;"
+    })[char]);
+  }
+
+  function showSignedOut() {
+    currentUser = null;
+    currentStaff = null;
+    loginPanel.style.display = "block";
+    dashboard.style.display = "none";
+    message("Sign in with your invited staff account.");
+  }
+
+  function showSignedIn() {
+    loginPanel.style.display = "none";
+    dashboard.style.display = "block";
+    document.getElementById("staffIdentity").textContent =
+      `${currentStaff.display_name} · ${currentStaff.role}`;
+  }
+
+  async function loadStaff() {
+    const { data, error } = await supabase
+      .from("staff_members")
+      .select("user_id,display_name,role,active")
+      .eq("user_id", currentUser.id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!data || !data.active) {
+      await supabase.auth.signOut();
+      throw new Error("This account is not an active portal staff member.");
+    }
+
+    currentStaff = data;
+    showSignedIn();
+    await loadEvents();
+  }
+
+  async function loadEvents() {
+    eventsList.textContent = "Loading events…";
+
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .order("event_time", { ascending: true })
+      .limit(100);
+
+    if (error) {
+      eventsList.textContent = "Unable to load events: " + error.message;
+      return;
+    }
+
+    if (!data || !data.length) {
+      eventsList.textContent = "No events yet.";
+      return;
+    }
+
+    eventsList.innerHTML = data.map(event => {
+      const canReview = REVIEWERS.includes(currentStaff.role);
+      const canSubmit = SUBMITTERS.includes(currentStaff.role);
+      const date = new Date(event.event_time);
+      const safeDate = Number.isNaN(date.getTime())
+        ? "Date unavailable"
+        : date.toLocaleString();
+
+      const actions = canReview && event.status === "pending"
+        ? `<button data-action="approve" data-id="${escapeHTML(event.id)}">Approve</button>
+           <button class="danger" data-action="reject" data-id="${escapeHTML(event.id)}">Reject</button>`
+        : "";
+
+      const cancel = canReview && event.status === "approved"
+        ? `<button class="secondary" data-action="cancel" data-id="${escapeHTML(event.id)}">Cancel event</button>`
+        : "";
+
+      const details = `
+        <div class="event">
+          <div class="row">
+            <span class="pill">${escapeHTML(event.event_type)}</span>
+            <span class="pill">${escapeHTML(event.status)}</span>
+          </div>
+          <h3>${escapeHTML(event.title)}</h3>
+          <p>${escapeHTML(event.attacking_army)}${event.defending_army ? " vs " + escapeHTML(event.defending_army) : ""}</p>
+          <p class="muted">${escapeHTML(safeDate)}${event.target_server ? " · " + escapeHTML(event.target_server) : ""}</p>
+          <p>${escapeHTML(event.description)}</p>
+          ${event.staff_notes ? `<p class="muted">Staff notes: ${escapeHTML(event.staff_notes)}</p>` : ""}
+          ${canSubmit ? actions + cancel : ""}
+        </div>`;
+      return details;
+    }).join("");
+  }
+
+  async function changeEvent(eventId, action) {
+    if (!REVIEWERS.includes(currentStaff.role)) {
+      throw new Error("Your staff role cannot review events.");
+    }
+
+    const updates = {
+      status: action === "approve" ? "approved" :
+              action === "reject" ? "rejected" : "cancelled",
+      reviewed_by: currentUser.id,
+      reviewed_at: new Date().toISOString()
+    };
+
+    if (action === "reject") {
+      const note = prompt("Reason for rejection (optional):");
+      if (note === null) return;
+      updates.staff_notes = note;
+    }
+
+    const { error } = await supabase
+      .from("events")
+      .update(updates)
+      .eq("id", eventId);
+
+    if (error) throw error;
+    await loadEvents();
+    message("Event updated successfully.");
+  }
+
+  document.getElementById("loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy) return;
+    busy = true;
+
+    try {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email, password
+      });
+
+      if (error) throw error;
+
+      const { data } = await supabase.auth.getUser();
+      currentUser = data.user;
+      await loadStaff();
+      message("Signed in successfully.");
+    } catch (error) {
+      message("Sign-in error: " + error.message);
+    } finally {
+      busy = false;
+    }
+  });
+
+  document.getElementById("logout").addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    showSignedOut();
+  });
+
+  document.getElementById("refresh").addEventListener("click", loadEvents);
+
+  document.getElementById("eventForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (busy) return;
+    busy = true;
+
+    try {
+      if (!currentStaff || !SUBMITTERS.includes(currentStaff.role)) {
+        throw new Error("Your staff role cannot submit events.");
+      }
+
+      const type = document.getElementById("eventType").value;
+      const server = document.getElementById("server").value;
+      const defender = document.getElementById("defender").value.trim();
+
+      if (type === "invasion" && !server) {
+        throw new Error("Select the target server for an invasion.");
+      }
+
+      const payload = {
+        event_type: type,
+        title: document.getElementById("title").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        attacking_army: document.getElementById("attacker").value.trim(),
+        defending_army: defender || null,
+        target_server: server || null,
+        event_time: new Date(document.getElementById("eventTime").value).toISOString(),
+        submitted_by: currentUser.id,
+        submitted_by_name: currentStaff.display_name,
+        status: "pending"
+      };
+
+      const { error } = await supabase.from("events").insert(payload);
+      if (error) throw error;
+
+      e.target.reset();
+      await loadEvents();
+      message("Event submitted for staff approval.");
+    } catch (error) {
+      message("Submission error: " + error.message);
+    } finally {
+      busy = false;
+    }
+  });
+
+  eventsList.addEventListener("click", async e => {
+    const button = e.target.closest("button[data-action]");
+    if (!button) return;
+
+    try {
+      await changeEvent(button.dataset.id, button.dataset.action);
+    } catch (error) {
+      message("Event update error: " + error.message);
+    }
+  });
+
+  async function start() {
+    if (!window.supabase || !window.supabase.createClient) {
+      message("Supabase library failed to load. Check your internet connection and refresh.");
+      return;
+    }
+
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      message("Supabase error: " + error.message);
+      return;
+    }
+
+    if (data.session) {
+      currentUser = data.session.user;
+      try {
+        await loadStaff();
+        message("Portal ready.");
+      } catch (err) {
+        showSignedOut();
+        message(err.message);
+      }
+    } else {
+      showSignedOut();
+    }
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT" || !session) showSignedOut();
+    });
+  }
+
+  start();
+})();
+</script>
 </body>
 </html>
