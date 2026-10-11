@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CP 24/7 | World Map</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #071629;
+      color: #eef7ff;
+    }
+    header {
+      background: #102b4c;
+      padding: 22px 15px;
+      text-align: center;
+      border-bottom: 2px solid #48baff;
+    }
+    header h1 { margin: 0 0 10px; }
+    nav a {
+      color: #b9e5ff;
+      margin: 6px;
+      display: inline-block;
+      text-decoration: none;
+    }
+    nav a:hover { color: white; }
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 25px 16px;
+    }
+    .intro, .server {
+      background: #102541;
+      border: 1px solid #244d75;
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .intro { margin-bottom: 20px; }
+    input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid #48baff;
+      background: #071629;
+      color: white;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #servers {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    .server h3 { margin-top: 0; color: #75d0ff; }
+    .status { color: #b9cce0; font-size: 14px; }
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #a9c3dc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CP 24/7 World Map</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="map.html">World Map</a>
+      <a href="armies.html">Armies</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="events.html">Events</a>
+      <a href="news.html">News</a>
+      <a href="rules.html">Rules</a>
+      <a href="staff.html">Staff</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Explore the CP 24/7 World</h2>
+      <p>Search the map to find a server. Ownership and army information will be connected to the live bot database in a later step.</p>
+      <input id="search" type="search"
+        placeholder="Search servers..."
+        aria-label="Search servers">
+    </section>
+
+    <section id="servers" aria-live="polite"></section>
+  </main>
+
+  <footer>Club Penguin 24/7 · World Map</footer>
+
+  <script>
+    const serverNames = [
+      "Frosty Falls", "Penguin Peak", "Icy Isles",
+      "Snowdrift", "Polar Pines", "Crystal Cove",
+      "Frostbite Bay", "Winterwood", "Glacier Grove",
+      "Arctic Breeze", "Snowcap", "Frozen Fjord",
+      "Chill Valley", "Icicle Isle", "Blizzard Bay",
+      "Frostfall", "Penguin Pines", "Snowy Summit",
+      "Arctic Harbor", "Crystal Glacier", "Winter Wave",
+      "Frosty Harbor", "Icebound", "Snowstorm",
+      "Polar Point"
+    ];
+
+    const container = document.getElementById("servers");
+    const search = document.getElementById("search");
+
+    function displayServers() {
+      const term = search.value.toLowerCase();
+      const matches = serverNames.filter(name =>
+        name.toLowerCase().includes(term)
+      );
+
+      container.innerHTML = "";
+
+      if (matches.length === 0) {
+        container.textContent = "No matching servers found.";
+        return;
+      }
+
+      matches.forEach(name => {
+        const card = document.createElement("article");
+        card.className = "server";
+
+        const title = document.createElement("h3");
+        title.textContent = name;
+
+        const status = document.createElement("p");
+        status.className = "status";
+        status.textContent = "Ownership: Awaiting live database";
+
+        card.append(title, status);
+        container.appendChild(card);
+      });
+    }
+
+    search.addEventListener("input", displayServers);
+    displayServers();
+  </script>
+</body>
+  </html>
