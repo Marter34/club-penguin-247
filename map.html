@@ -120,7 +120,19 @@
       statusText.textContent = "Loading live map data...";
 
       try {
-        const response = await fetch(API_URL, { cache: "no-store" });
+      const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 15000);
+
+let response;
+
+try {
+  response = await fetch(API_URL, {
+    cache: "no-store",
+    signal: controller.signal
+  });
+} finally {
+  clearTimeout(timeout);
+}
         if (!response.ok) {
           throw new Error("API returned HTTP " + response.status);
         }
