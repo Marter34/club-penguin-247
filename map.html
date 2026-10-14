@@ -4,164 +4,1500 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CP 24/7 — World Map</title>
+  <meta name="theme-color" content="#101827">
+
+  <title>CP 24/7 — Interactive World Map</title>
+
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --bg: #0b1220;
+      --panel: #131f32;
+      --panel2: #192941;
+      --border: #2b405d;
+      --blue: #3999ff;
+      --text: #f2f6ff;
+      --muted: #a9bad2;
+      --green: #76e6a1;
+      --red: #ff8585;
+      --gold: #ffd479;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #101827;
-      color: #f3f6fc;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.5;
     }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    a {
+      color: #9dccff;
+    }
+
     header {
       padding: 28px 16px;
       text-align: center;
-      background: #172b49;
-      border-bottom: 2px solid #4aa8ff;
+      background:
+        radial-gradient(ellipse at top, #254c79 0%, #172b49 55%, #101827 100%);
+      border-bottom: 2px solid var(--blue);
     }
-    h1 { margin: 0 0 8px; }
-    header p { margin: 0; color: #c3d5ed; }
-    main { max-width: 1000px; margin: auto; padding: 20px 14px; }
-    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-    input, button {
-      padding: 12px;
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(27px, 5vw, 40px);
+    }
+
+    header p {
+      color: #c6d9f3;
+      margin: 8px 0 0;
+    }
+
+    .eyebrow {
+      color: #80bdff;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    main {
+      width: min(1400px, 100%);
+      padding: 22px 16px 40px;
+      margin: auto;
+    }
+
+    .panel {
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      min-width: 0;
+    }
+
+    .panel h2, .panel h3 {
+      margin-top: 0;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    input, select {
+      min-width: 0;
+      padding: 11px 12px;
+      color: var(--text);
+      background: #0d1829;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      border: 1px solid #40536e;
-      font-size: 16px;
     }
-    input { flex: 1; min-width: 180px; background: #1b2739; color: white; }
-    button { background: #2686e8; color: white; cursor: pointer; }
-    #status { color: #c3d5ed; margin: 12px 0; }
-    #servers {
+
+    #search {
+      flex: 1;
+      min-width: 190px;
+    }
+
+    .btn {
+      border: 1px solid #438ddc;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #2379d0;
+      color: white;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      background: #318de9;
+    }
+
+    .btn.secondary {
+      background: #1b2b42;
+      border-color: var(--border);
+    }
+
+    .btn.secondary:hover {
+      background: #263c58;
+    }
+
+    .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
+      margin-bottom: 18px;
     }
-    .server {
+
+    .stat {
       padding: 16px;
-      background: #1b2739;
-      border: 1px solid #344660;
-      border-radius: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
     }
-    .server h2 { font-size: 17px; margin: 0 0 10px; }
-    .owner { color: #9dcaff; overflow-wrap: anywhere; }
-    .free { color: #a8e6b0; }
-    footer { text-align: center; padding: 24px; color: #9eacc0; }
-    a { color: #9dcaff; }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stat-value {
+      font-size: 27px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(280px, .8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .map-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .map-heading h2 {
+      margin-bottom: 4px;
+    }
+
+    #mapStatus {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 14px 0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch {
+      width: 13px;
+      height: 13px;
+      border: 1px solid #ffffff55;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .world-map {
+      position: relative;
+      overflow: hidden;
+      min-height: 450px;
+      padding: 20px;
+      border: 1px solid #294c70;
+      border-radius: 12px;
+      background:
+        radial-gradient(ellipse at 50% 45%, #1b4a69 0%, #12334f 48%, #0c2039 100%);
+    }
+
+    .world-map::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .2;
+      pointer-events: none;
+      background-image:
+        linear-gradient(#91cfff22 1px, transparent 1px),
+        linear-gradient(90deg, #91cfff22 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    .map-decoration {
+      position: absolute;
+      z-index: 0;
+      color: #9edaff;
+      opacity: .3;
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    .map-decoration.north {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: 3px;
+    }
+
+    .map-decoration.south {
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: 3px;
+    }
+
+    .map-regions {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .region {
+      min-width: 0;
+      padding: 10px;
+      background: #14243acb;
+      border: 1px solid #91cfff55;
+      border-radius: 13px;
+      backdrop-filter: blur(3px);
+    }
+
+    .region h3 {
+      margin: 0 0 3px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .region-subtitle {
+      color: #a7c4df;
+      font-size: 11px;
+      margin-bottom: 10px;
+    }
+
+    .land-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .land {
+      min-width: 0;
+      min-height: 86px;
+      padding: 8px 5px;
+      border: 2px solid #b2cce6;
+      border-radius: 8px;
+      color: #071421;
+      text-align: center;
+      overflow-wrap: anywhere;
+      transition: transform .12s, filter .12s;
+    }
+
+    .land:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.12);
+    }
+
+    .land:focus-visible {
+      outline: 3px solid white;
+      outline-offset: 2px;
+    }
+
+    .land.selected {
+      outline: 3px solid white;
+      outline-offset: 1px;
+      box-shadow: 0 0 0 5px #3999ff80;
+    }
+
+    .land-name {
+      display: block;
+      font-weight: bold;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .land-owner {
+      display: block;
+      margin-top: 7px;
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    .owner-free {
+      background: #bcebc6;
+      border-color: #76e6a1;
+    }
+
+    .owner-army {
+      background: #8bc5ff;
+      border-color: #3999ff;
+    }
+
+    .owner-other {
+      background: #e6d1ff;
+      border-color: #b68aff;
+    }
+
+    .region.complete {
+      border-color: var(--green);
+      box-shadow: inset 0 0 0 1px #76e6a144;
+    }
+
+    .region-progress {
+      height: 5px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 5px;
+      background: #30435a;
+    }
+
+    .region-progress > span {
+      display: block;
+      height: 100%;
+      background: var(--green);
+    }
+
+    .region-footer {
+      color: #b8cbe1;
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .details {
+      position: sticky;
+      top: 12px;
+    }
+
+    .details h2 {
+      margin-bottom: 5px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .detail-value {
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-row {
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .detail-row:last-of-type {
+      border-bottom: 0;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #243951;
+      color: #c6e2ff;
+    }
+
+    .pill.free {
+      background: #183d2b;
+      color: var(--green);
+    }
+
+    .pill.claimed {
+      background: #183757;
+      color: #9dccff;
+    }
+
+    .pill.complete {
+      background: #183d2b;
+      color: var(--green);
+    }
+
+    .pill.incomplete {
+      background: #47361d;
+      color: var(--gold);
+    }
+
+    .section-space {
+      margin-top: 18px;
+    }
+
+    .state-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .state-card {
+      padding: 13px;
+      background: #101c2d;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+    }
+
+    .state-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .state-card h3 {
+      font-size: 15px;
+      margin: 0;
+    }
+
+    .state-card p {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 5px 0;
+    }
+
+    .state-card button {
+      margin-top: 9px;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: #30435a;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 9px;
+    }
+
+    .progress-track span {
+      display: block;
+      height: 100%;
+      background: var(--blue);
+    }
+
+    .notice {
+      padding: 12px;
+      border: 1px solid #385575;
+      border-radius: 9px;
+      background: #11243b;
+      color: #c4ddfa;
+      font-size: 13px;
+    }
+
+    .notice.warning {
+      border-color: #82662f;
+      background: #352b19;
+      color: #ffe0a0;
+    }
+
+    .empty {
+      padding: 24px 12px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .error {
+      color: #ffb0b0;
+    }
+
+    footer {
+      padding: 25px 16px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 850px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .details {
+        position: static;
+      }
+
+      .world-map {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 620px) {
+      main {
+        padding: 14px 10px 30px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .map-regions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .world-map {
+        padding: 10px;
+      }
+
+      .panel {
+        padding: 13px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .map-regions {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
   <header>
-    <h1>CP 24/7 World Map</h1>
-    <p>Check server ownership from the live bot database.</p>
+    <div class="eyebrow">Club Penguin 24/7</div>
+    <h1>World Map</h1>
+    <p>Explore territories, inspect ownership, and track state control.</p>
   </header>
 
   <main>
     <div class="toolbar">
-      <input id="search" type="search" placeholder="Search servers or owners...">
-      <button id="refresh" type="button">Refresh Map</button>
+      <input
+        id="search"
+        type="search"
+        placeholder="Search land, states, or armies..."
+        aria-label="Search the map"
+      >
+
+      <select id="ownerFilter" aria-label="Filter territories">
+        <option value="all">All territories</option>
+        <option value="free">Freeland only</option>
+        <option value="owned">Claimed land only</option>
+      </select>
+
+      <button class="btn" id="refresh" type="button">
+        Refresh Map
+      </button>
+
+      <button class="btn secondary" id="resetView" type="button">
+        Reset View
+      </button>
     </div>
 
-    <p id="status" role="status">Loading map...</p>
-    <section id="servers" aria-label="Server ownership"></section>
+    <div id="connectionNotice" class="notice" role="status">
+      Connecting to the CP 24/7 map API...
+    </div>
+
+    <section class="stats" aria-label="Map statistics">
+      <div class="stat">
+        <div class="stat-label">Total states</div>
+        <div class="stat-value" id="totalStates">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Land plots</div>
+        <div class="stat-value" id="totalLands">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Claimed plots</div>
+        <div class="stat-value" id="claimedLands">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Fully controlled states</div>
+        <div class="stat-value" id="completeStates">—</div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <div class="map-heading">
+          <div>
+            <h2>Territory Map</h2>
+            <div id="mapStatus">Waiting for map data...</div>
+          </div>
+          <span class="pill" id="dataMode">Connecting</span>
+        </div>
+
+        <div class="legend">
+          <span class="legend-item">
+            <span class="swatch" style="background:#bcebc6"></span>
+            Freeland
+          </span>
+
+          <span class="legend-item">
+            <span class="swatch" style="background:#8bc5ff"></span>
+            Army territory
+          </span>
+
+          <span class="legend-item">
+            <span class="swatch" style="background:#e6d1ff"></span>
+            Other ownership
+          </span>
+
+          <span class="legend-item">
+            Select any plot for details
+          </span>
+        </div>
+
+        <div class="world-map">
+          <div class="map-decoration north">THE NORTHERN ISLANDS</div>
+          <div class="map-decoration south">CP 24/7 TERRITORIES</div>
+
+          <div id="mapRegions" class="map-regions">
+            <div class="empty">Loading territories...</div>
+          </div>
+        </div>
+
+        <div class="section-space notice">
+          <strong>State claim rule:</strong>
+          A state is eligible for a claim only when every land plot
+          inside it is owned by the same army. The bot must validate
+          and save any actual ownership changes.
+        </div>
+      </section>
+
+      <aside class="panel details">
+        <h2>Territory Details</h2>
+        <p class="muted" id="detailIntro">
+          Select a land plot on the map to inspect it.
+        </p>
+
+        <div id="detailContent" hidden>
+          <div class="detail-row">
+            <div class="muted">Land plot</div>
+            <div class="detail-value" id="detailLand"></div>
+          </div>
+
+          <div class="detail-row">
+            <div class="muted">State</div>
+            <div class="detail-value" id="detailState"></div>
+          </div>
+
+          <div class="detail-row">
+            <div class="muted">Owner</div>
+            <div class="detail-value" id="detailOwner"></div>
+          </div>
+
+          <div class="detail-row">
+            <div class="muted">Territory status</div>
+            <div id="detailStatus"></div>
+          </div>
+
+          <div class="detail-row">
+            <div class="muted">State control</div>
+            <div id="detailProgress"></div>
+          </div>
+        </div>
+
+        <div class="section-space">
+          <h3>State Directory</h3>
+          <p class="muted">
+            Select a state to see its land and control progress.
+          </p>
+          <div id="stateDirectory" class="state-list">
+            <div class="empty">Loading states...</div>
+          </div>
+        </div>
+      </aside>
+    </div>
   </main>
 
   <footer>
-    Club Penguin 24/7 · <a href="index.html">Home</a>
+    Club Penguin 24/7 ·
+    <a href="index.html">Home</a>
+    · World Map
   </footer>
 
   <script>
-    const API_URL = "https://cpa-bot-8ihb.onrender.com/api/map";
-    const serverList = document.getElementById("servers");
-    const statusText = document.getElementById("status");
-    const searchInput = document.getElementById("search");
-    const refreshButton = document.getElementById("refresh");
+    "use strict";
 
-    let allServers = [];
+    // -------------------------------------------------------
+    // CONFIGURATION
+    // -------------------------------------------------------
 
-    function renderServers() {
-      const query = searchInput.value.trim().toLowerCase();
-      const filtered = allServers.filter(server =>
-        server.name.toLowerCase().includes(query) ||
-        server.owner.toLowerCase().includes(query)
+    const API_URL =
+      "https://cpa-bot-8ihb.onrender.com/api/map";
+
+    // The map endpoint is expected to return:
+    //
+    // {
+    //   "success": true,
+    //   "states": [
+    //     {
+    //       "name": "Polar Peak",
+    //       "lands": [
+    //         {
+    //           "id": "polar-peak-1",
+    //           "name": "Snowcap",
+    //           "owner": "Freeland"
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // }
+    //
+    // A flat "servers" array is also accepted for compatibility,
+    // but it cannot describe state completion unless each entry
+    // supplies its state and land information.
+
+    // This sample map is shown ONLY if the live API fails or
+    // does not yet return states. It is never submitted to the bot.
+    const DEMO_STATES = [
+      {
+        name: "Polar Peak",
+        lands: [
+          { id: "pp-1", name: "Snowcap", owner: "Freeland" },
+          { id: "pp-2", name: "Frozen Fjord", owner: "Freeland" },
+          { id: "pp-3", name: "Polar Point", owner: "Freeland" },
+          { id: "pp-4", name: "Frostfall", owner: "Freeland" }
+        ]
+      },
+      {
+        name: "Glacier Grove",
+        lands: [
+          { id: "gg-1", name: "Crystal Glacier", owner: "Freeland" },
+          { id: "gg-2", name: "Glacier Grove", owner: "Freeland" },
+          { id: "gg-3", name: "Icicle Isle", owner: "Freeland" },
+          { id: "gg-4", name: "Icebound", owner: "Freeland" }
+        ]
+      },
+      {
+        name: "Frostmore",
+        lands: [
+          { id: "fm-1", name: "Frosty Falls", owner: "Freeland" },
+          { id: "fm-2", name: "Winterwood", owner: "Freeland" },
+          { id: "fm-3", name: "Chill Valley", owner: "Freeland" },
+          { id: "fm-4", name: "Blizzard Bay", owner: "Freeland" }
+        ]
+      },
+      {
+        name: "Frostbite Bay",
+        lands: [
+          { id: "fb-1", name: "Frostbite Bay", owner: "Freeland" },
+          { id: "fb-2", name: "Arctic Harbor", owner: "Freeland" },
+          { id: "fb-3", name: "Snowstorm", owner: "Freeland" },
+          { id: "fb-4", name: "Winter Wave", owner: "Freeland" }
+        ]
+      },
+      {
+        name: "Penguin Pines",
+        lands: [
+          { id: "ppn-1", name: "Penguin Pines", owner: "Freeland" },
+          { id: "ppn-2", name: "Polar Pines", owner: "Freeland" },
+          { id: "ppn-3", name: "Snowy Summit", owner: "Freeland" },
+          { id: "ppn-4", name: "Arctic Breeze", owner: "Freeland" }
+        ]
+      },
+      {
+        name: "Crystal Cove",
+        lands: [
+          { id: "cc-1", name: "Crystal Cove", owner: "Freeland" },
+          { id: "cc-2", name: "Icy Isles", owner: "Freeland" },
+          { id: "cc-3", name: "Snowdrift", owner: "Freeland" },
+          { id: "cc-4", name: "Penguin Peak", owner: "Freeland" }
+        ]
+      }
+    ];
+
+    // -------------------------------------------------------
+    // PAGE STATE
+    // -------------------------------------------------------
+
+    const $ = id => document.getElementById(id);
+
+    let states = [];
+    let selectedLandId = null;
+    let selectedStateName = null;
+    let usingDemoData = false;
+    let lastLoadedAt = null;
+
+    // -------------------------------------------------------
+    // NORMALIZE API DATA
+    // -------------------------------------------------------
+
+    function normalizeOwner(value) {
+      const owner = String(value ?? "").trim();
+      return owner || "Freeland";
+    }
+
+    function isFree(owner) {
+      return owner.trim().toLowerCase() === "freeland";
+    }
+
+    function normalizeLand(land, index, stateName) {
+      if (typeof land === "string") {
+        return {
+          id: stateName + "-" + index,
+          name: land,
+          owner: "Freeland"
+        };
+      }
+
+      return {
+        id: String(land.id ?? land._id ??
+          stateName + "-" + index),
+        name: String(land.name ?? land.server ??
+          land.title ?? "Unnamed land"),
+        owner: normalizeOwner(
+          land.owner ?? land.army ?? land.ownedBy
+        )
+      };
+    }
+
+    function normalizeStates(data) {
+      if (Array.isArray(data.states)) {
+        return data.states.map((state, stateIndex) => {
+          const name = String(
+            state.name ?? state.state ?? "Unnamed state"
+          );
+
+          const rawLands = Array.isArray(state.lands)
+            ? state.lands
+            : Array.isArray(state.territories)
+              ? state.territories
+              : [];
+
+          return {
+            id: String(state.id ?? state._id ?? name),
+            name,
+            lands: rawLands.map((land, index) =>
+              normalizeLand(land, index, name)
+            )
+          };
+        });
+      }
+
+      // Compatibility with the old server-list endpoint.
+      // Each server must have a state field to be grouped correctly.
+      if (Array.isArray(data.servers)) {
+        const groups = new Map();
+
+        data.servers.forEach((server, index) => {
+          const stateName = String(
+            server.state ?? server.region ?? ""
+          ).trim();
+
+          if (!stateName) {
+            return;
+          }
+
+          if (!groups.has(stateName)) {
+            groups.set(stateName, {
+              id: stateName,
+              name: stateName,
+              lands: []
+            });
+          }
+
+          groups.get(stateName).lands.push(
+            normalizeLand(server, index, stateName)
+          );
+        });
+
+        return Array.from(groups.values());
+      }
+
+      throw new Error(
+        "The API returned neither a states array nor usable state data."
       );
+    }
 
-      serverList.replaceChildren();
+    function validateStates(input) {
+      if (!Array.isArray(input)) {
+        throw new Error("Invalid state data.");
+      }
 
-      if (!filtered.length) {
-        statusText.textContent = allServers.length
-          ? "No servers match your search."
-          : "No server data was returned by the API.";
+      const seenIds = new Set();
+
+      return input.map(state => {
+        if (!state || typeof state.name !== "string") {
+          throw new Error("A state is missing its name.");
+        }
+
+        if (!Array.isArray(state.lands)) {
+          throw new Error(
+            "State " + state.name + " has no land array."
+          );
+        }
+
+        const lands = state.lands.map(land => {
+          const id = String(land.id);
+          if (seenIds.has(id)) {
+            throw new Error(
+              "Duplicate land ID: " + id
+            );
+          }
+          seenIds.add(id);
+
+          return {
+            id,
+            name: String(land.name),
+            owner: normalizeOwner(land.owner)
+          };
+        });
+
+        return {
+          id: String(state.id ?? state.name),
+          name: String(state.name),
+          lands
+        };
+      });
+    }
+
+    // -------------------------------------------------------
+    // STATE CONTROL CALCULATIONS
+    // -------------------------------------------------------
+
+    function getStateInfo(state) {
+      const total = state.lands.length;
+      const claimed = state.lands.filter(
+        land => !isFree(land.owner)
+      ).length;
+
+      const ownerCounts = new Map();
+
+      for (const land of state.lands) {
+        if (!isFree(land.owner)) {
+          ownerCounts.set(
+            land.owner,
+            (ownerCounts.get(land.owner) || 0) + 1
+          );
+        }
+      }
+
+      let controllingArmy = null;
+
+      if (total > 0 && claimed === total &&
+          ownerCounts.size === 1) {
+        controllingArmy = ownerCounts.keys().next().value;
+      }
+
+      return {
+        total,
+        claimed,
+        free: total - claimed,
+        percent: total
+          ? Math.round((claimed / total) * 100)
+          : 0,
+        complete: Boolean(controllingArmy),
+        controllingArmy
+      };
+    }
+
+    function getAllLands() {
+      return states.flatMap(state =>
+        state.lands.map(land => ({
+          ...land,
+          stateName: state.name,
+          stateId: state.id
+        }))
+      );
+    }
+
+    // -------------------------------------------------------
+    // MAP COLORING
+    // -------------------------------------------------------
+
+    function getOwnerClass(owner) {
+      if (isFree(owner)) {
+        return "owner-free";
+      }
+
+      // These are display colors, not verified army identity.
+      return "owner-army";
+    }
+
+    // -------------------------------------------------------
+    // RENDER MAP
+    // -------------------------------------------------------
+
+    function renderMap() {
+      const root = $("mapRegions");
+      const query = $("search").value.trim().toLowerCase();
+      const filter = $("ownerFilter").value;
+
+      root.replaceChildren();
+
+      const visibleStates = states.map(state => {
+        const lands = state.lands.filter(land => {
+          const free = isFree(land.owner);
+
+          const matchesFilter =
+            filter === "all" ||
+            (filter === "free" && free) ||
+            (filter === "owned" && !free);
+
+          const matchesSearch =
+            !query ||
+            state.name.toLowerCase().includes(query) ||
+            land.name.toLowerCase().includes(query) ||
+            land.owner.toLowerCase().includes(query);
+
+          return matchesFilter && matchesSearch;
+        });
+
+        return { state, lands };
+      }).filter(entry => entry.lands.length > 0);
+
+      if (!visibleStates.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No territories match your search.";
+        root.append(empty);
+        $("mapStatus").textContent = "No matching territories";
         return;
       }
 
-      for (const server of filtered) {
-        const card = document.createElement("article");
-        card.className = "server";
+      let visibleCount = 0;
 
-        const name = document.createElement("h2");
-        name.textContent = server.name;
+      for (const entry of visibleStates) {
+        const state = entry.state;
+        const info = getStateInfo(state);
 
-        const owner = document.createElement("p");
-        owner.className = "owner" +
-          (server.owner.toLowerCase() === "freeland" ? " free" : "");
-        owner.textContent = "Owner: " + server.owner;
+        const region = document.createElement("section");
+        region.className =
+          "region" + (info.complete ? " complete" : "");
 
-        card.append(name, owner);
-        serverList.append(card);
+        const heading = document.createElement("h3");
+        heading.textContent = state.name;
+
+        const subtitle = document.createElement("div");
+        subtitle.className = "region-subtitle";
+        subtitle.textContent = info.complete
+          ? "Controlled by " + info.controllingArmy
+          : info.claimed + " of " + info.total +
+            " plots claimed";
+
+        const grid = document.createElement("div");
+        grid.className = "land-grid";
+
+        for (const land of entry.lands) {
+          visibleCount++;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className =
+            "land " + getOwnerClass(land.owner);
+
+          if (land.id === selectedLandId) {
+            button.classList.add("selected");
+          }
+
+          button.setAttribute(
+            "aria-label",
+            land.name + ", state " + state.name +
+            ", owner " + land.owner
+          );
+
+          const landName = document.createElement("span");
+          landName.className = "land-name";
+          landName.textContent = land.name;
+
+          const owner = document.createElement("span");
+          owner.className = "land-owner";
+          owner.textContent = isFree(land.owner)
+            ? "Freeland"
+            : land.owner;
+
+          button.append(landName, owner);
+
+          button.addEventListener("click", () => {
+            selectedLandId = land.id;
+            selectedStateName = state.name;
+            renderMap();
+            renderDetails();
+          });
+
+          grid.append(button);
+        }
+
+        const progress = document.createElement("div");
+        progress.className = "region-progress";
+
+        const fill = document.createElement("span");
+        fill.style.width = info.percent + "%";
+        progress.append(fill);
+
+        const footer = document.createElement("div");
+        footer.className = "region-footer";
+        footer.textContent = info.complete
+          ? "State fully controlled"
+          : info.free + " plots remain unclaimed";
+
+        region.append(
+          heading,
+          subtitle,
+          grid,
+          progress,
+          footer
+        );
+
+        root.append(region);
       }
 
-      statusText.textContent =
-        `Showing ${filtered.length} of ${allServers.length} servers.`;
+      $("mapStatus").textContent =
+        "Showing " + visibleCount + " land plots";
     }
 
+    // -------------------------------------------------------
+    // RENDER STATISTICS
+    // -------------------------------------------------------
+
+    function renderStats() {
+      const lands = getAllLands();
+
+      const claimed = lands.filter(
+        land => !isFree(land.owner)
+      ).length;
+
+      const complete = states.filter(
+        state => getStateInfo(state).complete
+      ).length;
+
+      $("totalStates").textContent = states.length;
+      $("totalLands").textContent = lands.length;
+      $("claimedLands").textContent = claimed;
+      $("completeStates").textContent = complete;
+    }
+
+    // -------------------------------------------------------
+    // RENDER SELECTED LAND
+    // -------------------------------------------------------
+
+    function renderDetails() {
+      const land = getAllLands().find(
+        item => item.id === selectedLandId
+      );
+
+      if (!land) {
+        $("detailContent").hidden = true;
+        $("detailIntro").hidden = false;
+        return;
+      }
+
+      $("detailContent").hidden = false;
+      $("detailIntro").hidden = true;
+
+      $("detailLand").textContent = land.name;
+      $("detailState").textContent = land.stateName;
+      $("detailOwner").textContent = land.owner;
+
+      const status = document.createElement("span");
+      status.className = "pill " +
+        (isFree(land.owner) ? "free" : "claimed");
+      status.textContent = isFree(land.owner)
+        ? "Freeland"
+        : "Claimed";
+
+      $("detailStatus").replaceChildren(status);
+
+      const state = states.find(
+        item => item.id === land.stateId
+      );
+
+      const info = getStateInfo(state);
+      const progress = document.createElement("div");
+
+      const summary = document.createElement("div");
+      summary.textContent = info.complete
+        ? "Fully controlled by " + info.controllingArmy
+        : info.claimed + " of " + info.total +
+          " plots claimed.";
+
+      const badge = document.createElement("span");
+      badge.className = "pill " +
+        (info.complete ? "complete" : "incomplete");
+      badge.textContent = info.complete
+        ? "State controlled"
+        : "Not fully controlled";
+
+      progress.append(summary, document.createElement("br"), badge);
+
+      $("detailProgress").replaceChildren(progress);
+    }
+
+    // -------------------------------------------------------
+    // RENDER STATE DIRECTORY
+    // -------------------------------------------------------
+
+    function renderDirectory() {
+      const root = $("stateDirectory");
+      const query = $("search").value.trim().toLowerCase();
+
+      root.replaceChildren();
+
+      const visible = states.filter(state => {
+        if (!query) return true;
+
+        return state.name.toLowerCase().includes(query) ||
+          state.lands.some(land =>
+            land.name.toLowerCase().includes(query) ||
+            land.owner.toLowerCase().includes(query)
+          );
+      });
+
+      if (!visible.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No matching states.";
+        root.append(empty);
+        return;
+      }
+
+      for (const state of visible) {
+        const info = getStateInfo(state);
+
+        const card = document.createElement("article");
+        card.className = "state-card";
+
+        const top = document.createElement("div");
+        top.className = "state-card-top";
+
+        const name = document.createElement("h3");
+        name.textContent = state.name;
+
+        const badge = document.createElement("span");
+        badge.className = "pill " +
+          (info.complete ? "complete" : "incomplete");
+        badge.textContent = info.complete
+          ? "Controlled"
+          : "Unclaimed / contested";
+
+        top.append(name, badge);
+
+        const description = document.createElement("p");
+        description.textContent =
+          info.claimed + " / " + info.total +
+          " plots claimed · " + info.free + " free";
+
+        if (info.complete) {
+          description.textContent +=
+            " · Owner: " + info.controllingArmy;
+        }
+
+        const track = document.createElement("div");
+        track.className = "progress-track";
+
+        const fill = document.createElement("span");
+        fill.style.width = info.percent + "%";
+        track.append(fill);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "btn secondary";
+        button.textContent = "View state";
+
+        button.addEventListener("click", () => {
+          selectedStateName = state.name;
+          selectedLandId = null;
+
+          $("search").value = "";
+          $("ownerFilter").value = "all";
+
+          renderMap();
+          renderDirectory();
+          renderDetails();
+
+          const map = document.querySelector(".world-map");
+          map.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+          const region = Array.from(
+            document.querySelectorAll(".region")
+          ).find(item =>
+            item.querySelector("h3")?.textContent === state.name
+          );
+
+          if (region) {
+            region.style.outline = "3px solid #3999ff";
+            setTimeout(() => {
+              region.style.outline = "";
+            }, 1600);
+          }
+        });
+
+        card.append(top, description, track, button);
+        root.append(card);
+      }
+    }
+
+    // -------------------------------------------------------
+    // CONNECTION STATUS
+    // -------------------------------------------------------
+
+    function setConnection(message, mode, warning = false) {
+      $("connectionNotice").textContent = message;
+      $("connectionNotice").className =
+        "notice" + (warning ? " warning" : "");
+
+      $("dataMode").textContent = mode;
+    }
+
+    function renderAll() {
+      renderStats();
+      renderMap();
+      renderDirectory();
+      renderDetails();
+    }
+
+    // -------------------------------------------------------
+    // LOAD LIVE DATA
+    // -------------------------------------------------------
+
     async function loadMap() {
-      refreshButton.disabled = true;
-      statusText.textContent = "Loading live map data...";
+      const refresh = $("refresh");
+
+      refresh.disabled = true;
+      refresh.textContent = "Loading...";
+      setConnection("Connecting to the live bot API...", "Loading");
+
+      const controller = new AbortController();
+      const timeout = setTimeout(
+        () => controller.abort(),
+        15000
+      );
 
       try {
-      const controller = new AbortController();
-const timeout = setTimeout(() => controller.abort(), 15000);
+        const response = await fetch(API_URL, {
+          method: "GET",
+          cache: "no-store",
+          signal: controller.signal,
+          headers: {
+            "Accept": "application/json"
+          }
+        });
 
-let response;
-
-try {
-  response = await fetch(API_URL, {
-    cache: "no-store",
-    signal: controller.signal
-  });
-} finally {
-  clearTimeout(timeout);
-}
         if (!response.ok) {
-          throw new Error("API returned HTTP " + response.status);
+          throw new Error(
+            "API returned HTTP " + response.status
+          );
         }
 
         const data = await response.json();
-        if (!data.success || !Array.isArray(data.servers)) {
-          throw new Error("The API response format was unexpected.");
+
+        if (data.success === false) {
+          throw new Error(
+            data.error || "The API reported a failure."
+          );
         }
 
-        allServers = data.servers.map(server => ({
-          name: String(server.name || "Unknown server"),
-          owner: String(server.owner || "Freeland")
-        }));
+        const normalized = validateStates(
+          normalizeStates(data)
+        );
 
-        renderServers();
+        if (!normalized.length) {
+          throw new Error(
+            "The API did not return any states."
+          );
+        }
+
+        states = normalized;
+        usingDemoData = false;
+        lastLoadedAt = new Date();
+
+        if (
+          selectedLandId &&
+          !getAllLands().some(
+            land => land.id === selectedLandId
+          )
+        ) {
+          selectedLandId = null;
+        }
+
+        setConnection(
+          "Connected to the live map API. Last updated: " +
+            lastLoadedAt.toLocaleTimeString() +
+            ". Ownership is supplied by the bot.",
+          "Live",
+          false
+        );
+
+        renderAll();
+
       } catch (error) {
-        console.error("Map loading failed:", error);
-        serverList.replaceChildren();
-        statusText.textContent =
-          "Could not load the map. The bot service may be starting up, or its API may need fixing. Try again shortly.";
+        console.error("Map API error:", error);
+
+        // Do not display example data as if it were live.
+        // If we already have live data, keep it visible.
+        if (states.length && !usingDemoData) {
+          setConnection(
+            "Refresh failed. Showing the last successfully loaded live data. " +
+              error.message,
+            "Stale data",
+            true
+          );
+        } else {
+          states = validateStates(
+            normalizeStates({ states: DEMO_STATES })
+          );
+
+          usingDemoData = true;
+          selectedLandId = null;
+
+          setConnection(
+            "The live API could not be reached (" +
+              error.message +
+              "). Showing SAMPLE DATA only. " +
+              "These territories and owners are not saved in the bot.",
+            "Demo data",
+            true
+          );
+
+          renderAll();
+        }
+
       } finally {
-        refreshButton.disabled = false;
+        clearTimeout(timeout);
+        refresh.disabled = false;
+        refresh.textContent = "Refresh Map";
       }
     }
 
-    searchInput.addEventListener("input", renderServers);
-    refreshButton.addEventListener("click", loadMap);
+    // -------------------------------------------------------
+    // EVENTS
+    // -------------------------------------------------------
 
+    $("search").addEventListener("input", () => {
+      renderMap();
+      renderDirectory();
+    });
+
+    $("ownerFilter").addEventListener("change", renderMap);
+    $("refresh").addEventListener("click", loadMap);
+
+    $("resetView").addEventListener("click", () => {
+      $("search").value = "";
+      $("ownerFilter").value = "all";
+      selectedLandId = null;
+      selectedStateName = null;
+
+      renderAll();
+    });
+
+    // Initial load.
     loadMap();
+
+    // Refresh the live data every 60 seconds.
+    setInterval(() => {
+      if (!document.hidden) {
+        loadMap();
+      }
+    }, 60000);
   </script>
 </body>
 </html>
